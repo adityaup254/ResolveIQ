@@ -1,0 +1,52 @@
+@model ResolveIQ.Models.Ticket
+@{
+    ViewData["Title"] = "Ticket Details";
+}
+
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Ticket Details - #@Model.Id</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Title</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
+
+                    <dt class="col-sm-4">User</dt>
+                    <dd class="col-sm-8">@Model.User?.FullName (@Model.User?.Email)</dd>
+
+                    <dt class="col-sm-4">Category</dt>
+                    <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+                    <dt class="col-sm-4">Priority</dt>
+                    <dd class="col-sm-8">@Model.Priority</dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">@Model.Status</dd>
+
+                    <dt class="col-sm-4">Created Date</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("g")</dd>
+
+                    <dt class="col-sm-4">Updated Date</dt>
+                    <dd class="col-sm-8">@(Model.UpdatedDate?.ToString("g") ?? "Never")</dd>
+
+                    <dt class="col-sm-4">Technician</dt>
+                    <dd class="col-sm-8">@(Model.Technician?.FullName ?? "Unassigned")</dd>
+
+                    <dt class="col-sm-4">Resolution Note</dt>
+                    <dd class="col-sm-8">@(Model.ResolutionNote ?? "None")</dd>
+                </dl>
+                
+                <div class="mt-4">
+                    <a asp-action="EditTicket" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Tickets" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

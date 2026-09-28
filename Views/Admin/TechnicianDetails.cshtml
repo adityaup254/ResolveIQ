@@ -1,0 +1,32 @@
+@model ResolveIQ.Models.Technician
+@{
+    ViewData["Title"] = "Technician Details";
+}
+
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white"><h4>Technician Details</h4></div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Full Name</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">@Model.Phone</dd>
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-@(Model.IsActive ? "success" : "danger")">@(Model.IsActive ? "Active" : "Inactive")</span>
+                    </dd>
+                    <dt class="col-sm-4">Assigned Tickets</dt>
+                    <dd class="col-sm-8">@ViewBag.AssignedTickets</dd>
+                    <dt class="col-sm-4">Resolved Tickets</dt>
+                    <dd class="col-sm-8">@ViewBag.ResolvedTickets</dd>
+                </dl>
+                <a asp-action="Technicians" class="btn btn-secondary">Back</a>
+                <a asp-action="EditTechnician" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+@model IEnumerable<ResolveIQ.Models.User>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="mt-4">
+    <h2>User Management</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <form method="get" class="row g-2 my-3">
+        <div class="col-md-4">
+            <input type="text" name="searchString" class="form-control" placeholder="Search by name or email..." value="@ViewData["CurrentSearch"]" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>@u.Id</td>
+                        <td>@u.FullName</td>
+                        <td>@u.Email</td>
+                        <td><span class="badge bg-secondary">@u.Role</span></td>
+                        <td>
+                            @if (u.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="UserDetails" asp-route-id="@u.Id" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="EditUser" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <form asp-action="ToggleUserStatus" asp-route-id="@u.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-@(u.IsActive ? "outline-danger" : "outline-success")">
+                                    @(u.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+@{
+    ViewData["Title"] = "Welcome to ResolveIQ";
+}
+
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold text-primary">ResolveIQ</h1>
+        <p class="col-md-9 fs-5 text-muted">
+            AI-Assisted IT Service & Support Management System built with ASP.NET Core MVC, Web API, Entity Framework Core, and SQL Server.
+        </p>
+        <div class="d-flex gap-2 mt-3">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-primary btn-lg px-4">Go to Admin Dashboard</a>
+                }
+                else if (User.IsInRole("Technician"))
+                {
+                    <a asp-controller="Technician" asp-action="Dashboard" class="btn btn-primary btn-lg px-4">Go to Technician Dashboard</a>
+                }
+                else
+                {
+                    <a asp-controller="User" asp-action="Dashboard" class="btn btn-primary btn-lg px-4">Go to User Dashboard</a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4">Login</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg px-4">Register</a>
+            }
+            <a href="/swagger" target="_blank" class="btn btn-outline-dark btn-lg px-4">Explore Swagger API</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary"><i class="bi bi-people-fill"></i> Role-Based Portals</h5>
+                <p class="card-text text-muted">Dedicated workflows for <strong>Users</strong> (create/track tickets), <strong>Technicians</strong> (resolve tickets), and <strong>Admins</strong> (assign & manage).</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="bi bi-cpu-fill"></i> AI-Powered Triage</h5>
+                <p class="card-text text-muted">Smart assistance on ticket creation: automatic one-sentence summaries, category suggestions, and priority recommendations.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark"><i class="bi bi-code-slash"></i> RESTful Web API</h5>
+                <p class="card-text text-muted">Full CRUD programmatic API with interactive Swagger documentation at <code>/swagger</code>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-info bg-light shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title text-info mb-2">🔑 Demo Test Accounts</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0 bg-white">
+                <thead class="table-light">
+                    <tr>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Access Scope</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-danger">Admin</span></td>
+                        <td><code>admin@resolveiq.com</code></td>
+                        <td><code>Admin@123</code></td>
+                        <td>Full access to tickets, user status, technicians, and categories</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-primary">Technician</span></td>
+                        <td><code>technician@resolveiq.com</code></td>
+                        <td><code>Tech@123</code></td>
+                        <td>View assigned tickets, update status, and add resolution notes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">User</span></td>
+                        <td><code>user@resolveiq.com</code></td>
+                        <td><code>User@123</code></td>
+                        <td>Create tickets with AI assistance, track status, view own history</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

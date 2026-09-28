@@ -1,0 +1,29 @@
+@model ResolveIQ.Models.Category
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="row mt-4">
+    <div class="col-md-5 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning"><h4>Edit Category</h4></div>
+            <div class="card-body">
+                <form asp-action="EditCategory" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Categories" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-warning">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

@@ -1,0 +1,28 @@
+@model ResolveIQ.Models.Category
+@{
+    ViewData["Title"] = "Add Category";
+}
+
+<div class="row mt-4">
+    <div class="col-md-5 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white"><h4>Add Category</h4></div>
+            <div class="card-body">
+                <form asp-action="AddCategory" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Printer, VPN" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Categories" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

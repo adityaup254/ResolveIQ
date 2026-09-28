@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<div class="mt-4">
+    <h2>My Dashboard</h2>
+    <p class="text-muted">Welcome back, <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</strong>!</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card text-white bg-secondary text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.TotalTickets</h2>
+                    <small>My Total Tickets</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-primary text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.OpenTickets</h2>
+                    <small>Open</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.InProgress</h2>
+                    <small>In Progress</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-success text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.ResolvedTickets</h2>
+                    <small>Resolved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-dark text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.ClosedTickets</h2>
+                    <small>Closed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-4">
+        <a asp-action="CreateTicket" class="btn btn-primary me-2">+ Create New Ticket</a>
+        <a asp-action="MyTickets" class="btn btn-outline-secondary">View All My Tickets</a>
+    </div>
+
+    <!-- Recent Tickets -->
+    <h5>Recent Tickets</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Technician</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in ViewBag.RecentTickets)
+                {
+                    <tr>
+                        <td>@t.Id</td>
+                        <td>@t.Title</td>
+                        <td>@t.Category?.Name</td>
+                        <td>
+                            <span class="badge bg-@(t.Priority == "High" ? "danger" : t.Priority == "Medium" ? "warning" : "info")">@t.Priority</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-@(t.Status == "Open" ? "primary" : t.Status == "Closed" || t.Status == "Resolved" ? "success" : "secondary")">@t.Status</span>
+                        </td>
+                        <td>@(t.Technician?.FullName ?? "Unassigned")</td>
+                        <td><a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-info">View</a></td>
+                    </tr>
+                }
+                @if (((IEnumerable<ResolveIQ.Models.Ticket>)ViewBag.RecentTickets).Count() == 0)
+                {
+                    <tr><td colspan="7" class="text-center">You have no tickets yet.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

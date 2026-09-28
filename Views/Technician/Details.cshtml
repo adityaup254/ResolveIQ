@@ -1,0 +1,60 @@
+@model ResolveIQ.Models.Ticket
+@{
+    ViewData["Title"] = "Ticket Details & Update";
+}
+
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Ticket Details - #@Model.Id</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Title</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
+
+                    <dt class="col-sm-4">User</dt>
+                    <dd class="col-sm-8">@Model.User?.FullName</dd>
+
+                    <dt class="col-sm-4">Priority</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">@Model.Priority</span></dd>
+                </dl>
+                
+                <hr />
+
+                <form asp-action="UpdateTicket" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Assigned" selected="@(Model.Status == "Assigned")">Assigned</option>
+                            <option value="In Progress" selected="@(Model.Status == "In Progress")">In Progress</option>
+                            <option value="Resolved" selected="@(Model.Status == "Resolved")">Resolved</option>
+                            <option value="Closed" selected="@(Model.Status == "Closed")">Closed</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Resolution Note</label>
+                        <textarea name="resolutionNote" class="form-control" rows="4">@Model.ResolutionNote</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="AssignedTickets" class="btn btn-secondary">Back to List</a>
+                        <button type="submit" class="btn btn-success">Update Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

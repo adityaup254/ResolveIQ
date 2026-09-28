@@ -1,0 +1,61 @@
+@model IEnumerable<ResolveIQ.Models.Technician>
+@{
+    ViewData["Title"] = "Manage Technicians";
+    var techData = ViewBag.TechData as IEnumerable<dynamic>;
+}
+
+<div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Technician Management</h2>
+        <a asp-action="AddTechnician" class="btn btn-success">+ Add Technician</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Assigned Tickets</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model)
+                {
+                    var count = ViewBag.TechData != null
+                        ? ((IEnumerable<dynamic>)ViewBag.TechData)
+                            .FirstOrDefault(x => x.Tech.Id == t.Id)?.TicketCount ?? 0
+                        : 0;
+                    <tr>
+                        <td>@t.Id</td>
+                        <td>@t.FullName</td>
+                        <td>@t.Email</td>
+                        <td>@t.Phone</td>
+                        <td><span class="badge bg-secondary">@count</span></td>
+                        <td>
+                            <span class="badge bg-@(t.IsActive ? "success" : "danger")">@(t.IsActive ? "Active" : "Inactive")</span>
+                        </td>
+                        <td>
+                            <a asp-action="TechnicianDetails" asp-route-id="@t.Id" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="EditTechnician" asp-route-id="@t.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <form asp-action="ToggleTechnicianStatus" asp-route-id="@t.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-@(t.IsActive ? "outline-danger" : "outline-success")">
+                                    @(t.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

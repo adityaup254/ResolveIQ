@@ -1,0 +1,34 @@
+@model ResolveIQ.Models.Ticket
+@{
+    ViewData["Title"] = "Delete Ticket";
+}
+
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Delete Ticket - #@Model.Id</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="text-danger mb-3">Are you sure you want to delete this ticket?</h5>
+                
+                <dl class="row">
+                    <dt class="col-sm-4">Title</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+                    
+                    <dt class="col-sm-4">Category</dt>
+                    <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">@Model.Status</dd>
+                </dl>
+
+                <form asp-action="DeleteTicket" method="post" class="mt-4">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    <a asp-action="MyTickets" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

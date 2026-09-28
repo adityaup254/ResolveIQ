@@ -1,0 +1,61 @@
+@model IEnumerable<ResolveIQ.Models.Category>
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Category Management</h2>
+        <a asp-action="AddCategory" class="btn btn-success">+ Add Category</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Tickets Using It</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cat in Model)
+                {
+                    var count = ((IEnumerable<dynamic>)ViewBag.CategoryData)
+                        .FirstOrDefault(x => x.Cat.Id == cat.Id)?.TicketCount ?? 0;
+                    <tr>
+                        <td>@cat.Id</td>
+                        <td>@cat.Name</td>
+                        <td><span class="badge bg-secondary">@count</span></td>
+                        <td>
+                            <a asp-action="EditCategory" asp-route-id="@cat.Id" class="btn btn-sm btn-warning">Edit</a>
+                            @if (count == 0)
+                            {
+                                <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete this category?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-secondary" disabled title="Cannot delete — has @count ticket(s)">Delete</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

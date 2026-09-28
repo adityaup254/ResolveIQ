@@ -1,0 +1,131 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="mt-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <!-- Stat Cards Row 1 – Tickets -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-2">
+            <div class="card text-white bg-secondary text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.TotalTickets</h2>
+                    <small>Total Tickets</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-primary text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.OpenTickets</h2>
+                    <small>Open</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-warning text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.AssignedTickets</h2>
+                    <small>Assigned</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-info text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.InProgressTickets</h2>
+                    <small>In Progress</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-success text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.ResolvedTickets</h2>
+                    <small>Resolved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-dark text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.ClosedTickets</h2>
+                    <small>Closed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Cards Row 2 – Other -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-danger text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.HighPriority</h2>
+                    <small>High Priority Tickets</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-primary text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.TotalUsers</h2>
+                    <small>Total Users</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.TotalTechnicians</h2>
+                    <small>Total Technicians</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Tickets Table -->
+    <h5>Recent Tickets</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>User</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in ViewBag.RecentTickets)
+                {
+                    <tr>
+                        <td>@t.Id</td>
+                        <td>@t.Title</td>
+                        <td>@t.User?.FullName</td>
+                        <td>@t.Category?.Name</td>
+                        <td>
+                            <span class="badge bg-@(t.Priority == "High" ? "danger" : t.Priority == "Medium" ? "warning" : "info")">@t.Priority</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-@(t.Status == "Open" ? "primary" : t.Status == "Closed" || t.Status == "Resolved" ? "success" : "secondary")">@t.Status</span>
+                        </td>
+                        <td>@t.CreatedDate.ToShortDateString()</td>
+                        <td><a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-info">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <a asp-action="Tickets" class="btn btn-primary">View All Tickets</a>
+</div>

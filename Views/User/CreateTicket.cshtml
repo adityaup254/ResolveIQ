@@ -1,0 +1,297 @@
+@model ResolveIQ.Models.Ticket
+@{
+    ViewData["Title"] = "Create Ticket";
+}
+
+<div class="row mt-4">
+    <div class="col-md-9 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Create New Ticket</h4>
+                <span class="badge bg-light text-primary">AI-Assisted</span>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- AI Global Status / Error Message Banner -->
+                <div id="aiAlert" class="alert alert-warning alert-dismissible fade show d-none" role="alert">
+                    <span id="aiAlertMessage"></span>
+                    <button type="button" class="btn-close" onclick="hideAiAlert()"></button>
+                </div>
+
+                <form asp-action="CreateTicket" method="post" id="createTicketForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-bold">Ticket Title</label>
+                        <input asp-for="Title" class="form-control" id="ticketTitle" placeholder="e.g. Cannot connect to office VPN" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <!-- Description & AI Summary -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label asp-for="Description" class="form-label fw-bold mb-0">Detailed Description</label>
+                            <button type="button" id="btnAiSummary" class="btn btn-sm btn-outline-primary" onclick="generateAiSummary()">
+                                <span class="spinner-border spinner-border-sm d-none" id="summarySpinner" role="status"></span>
+                                ✨ Generate AI Summary
+                            </button>
+                        </div>
+                        <textarea asp-for="Description" class="form-control" id="ticketDescription" rows="4" placeholder="Describe the issue in detail..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+
+                        <!-- AI Generated Summary Box (Editable, Optional) -->
+                        <div id="aiSummaryContainer" class="card mt-2 border-info d-none bg-light">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="fw-bold text-info"><i class="bi bi-robot"></i> AI Suggested Summary (Editable)</small>
+                                    <div>
+                                        <button type="button" class="btn btn-xs btn-sm btn-outline-success" onclick="applySummaryToDescription()">Use as Description</button>
+                                        <button type="button" class="btn btn-xs btn-sm btn-outline-secondary" onclick="hideAiSummary()">Dismiss</button>
+                                    </div>
+                                </div>
+                                <input type="text" id="aiSummaryInput" class="form-control form-control-sm" />
+                                <small class="text-muted fst-italic">Note: Suggestions do not modify your original description unless you click 'Use as Description'.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category & Priority with AI Suggestions -->
+                    <div class="row">
+                        <!-- Category -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label asp-for="CategoryId" class="form-label fw-bold mb-0">Category</label>
+                                <button type="button" id="btnSuggestCategory" class="btn btn-sm btn-outline-info" onclick="suggestCategory()">
+                                    <span class="spinner-border spinner-border-sm d-none" id="categorySpinner" role="status"></span>
+                                    ✨ Suggest Category
+                                </button>
+                            </div>
+                            <select asp-for="CategoryId" class="form-select" id="categorySelect" asp-items="ViewBag.Categories">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+
+                            <!-- AI Category Suggestion Pill -->
+                            <div id="aiCategorySuggestion" class="mt-2 d-none">
+                                <div class="alert alert-info py-1 px-2 d-flex justify-content-between align-items-center mb-0">
+                                    <small>AI Suggestion: <strong id="aiCategoryText"></strong></small>
+                                    <button type="button" class="btn btn-xs btn-sm btn-primary py-0" onclick="applySuggestedCategory()">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label asp-for="Priority" class="form-label fw-bold mb-0">Priority</label>
+                                <button type="button" id="btnSuggestPriority" class="btn btn-sm btn-outline-warning text-dark" onclick="suggestPriority()">
+                                    <span class="spinner-border spinner-border-sm d-none" id="prioritySpinner" role="status"></span>
+                                    ✨ Suggest Priority
+                                </button>
+                            </div>
+                            <select asp-for="Priority" class="form-select" id="prioritySelect">
+                                <option value="">-- Select Priority --</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+
+                            <!-- AI Priority Suggestion Pill -->
+                            <div id="aiPrioritySuggestion" class="mt-2 d-none">
+                                <div class="alert alert-warning py-1 px-2 d-flex justify-content-between align-items-center mb-0">
+                                    <small>AI Suggestion: <strong id="aiPriorityText"></strong></small>
+                                    <button type="button" class="btn btn-xs btn-sm btn-dark py-0" onclick="applySuggestedPriority()">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4 border-top pt-3">
+                        <a asp-action="MyTickets" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Create Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        let suggestedCategoryValue = "";
+        let suggestedPriorityValue = "";
+
+        function showAiAlert(message, isWarning = true) {
+            const alertBox = document.getElementById("aiAlert");
+            const alertMsg = document.getElementById("aiAlertMessage");
+            alertBox.className = isWarning ? "alert alert-warning alert-dismissible fade show" : "alert alert-danger alert-dismissible fade show";
+            alertMsg.textContent = message;
+            alertBox.classList.remove("d-none");
+        }
+
+        function hideAiAlert() {
+            document.getElementById("aiAlert").classList.add("d-none");
+        }
+
+        // =====================================================================
+        // AI Feature 1: Generate AI Summary
+        // =====================================================================
+        async function generateAiSummary() {
+            hideAiAlert();
+            const desc = document.getElementById("ticketDescription").value.trim();
+
+            if (!desc) {
+                showAiAlert("Please enter a ticket description first before generating an AI summary.");
+                return;
+            }
+
+            const btn = document.getElementById("btnAiSummary");
+            const spinner = document.getElementById("summarySpinner");
+            btn.disabled = true;
+            spinner.classList.remove("d-none");
+
+            try {
+                const response = await fetch('/User/GenerateAiSummary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: desc })
+                });
+
+                const data = await response.json();
+                if (data.success && data.summary) {
+                    document.getElementById("aiSummaryInput").value = data.summary;
+                    document.getElementById("aiSummaryContainer").classList.remove("d-none");
+                } else {
+                    showAiAlert(data.message || "AI service is currently unavailable. You can continue creating the ticket manually.");
+                }
+            } catch (err) {
+                showAiAlert("AI service is currently unavailable. You can continue creating the ticket manually.");
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add("d-none");
+            }
+        }
+
+        function applySummaryToDescription() {
+            const summary = document.getElementById("aiSummaryInput").value;
+            if (summary) {
+                document.getElementById("ticketDescription").value = summary;
+            }
+            hideAiSummary();
+        }
+
+        function hideAiSummary() {
+            document.getElementById("aiSummaryContainer").classList.add("d-none");
+        }
+
+        // =====================================================================
+        // AI Feature 2: Suggest Category
+        // =====================================================================
+        async function suggestCategory() {
+            hideAiAlert();
+            const title = document.getElementById("ticketTitle").value.trim();
+            const desc = document.getElementById("ticketDescription").value.trim();
+
+            if (!title && !desc) {
+                showAiAlert("Please enter a ticket title or description before asking for category suggestions.");
+                return;
+            }
+
+            const btn = document.getElementById("btnSuggestCategory");
+            const spinner = document.getElementById("categorySpinner");
+            btn.disabled = true;
+            spinner.classList.remove("d-none");
+
+            try {
+                const response = await fetch('/User/SuggestCategory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, description: desc })
+                });
+
+                const data = await response.json();
+                if (data.success && data.category) {
+                    suggestedCategoryValue = data.category;
+                    document.getElementById("aiCategoryText").textContent = data.category;
+                    document.getElementById("aiCategorySuggestion").classList.remove("d-none");
+                } else {
+                    showAiAlert(data.message || "AI service is currently unavailable. You can continue creating the ticket manually.");
+                }
+            } catch (err) {
+                showAiAlert("AI service is currently unavailable. You can continue creating the ticket manually.");
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add("d-none");
+            }
+        }
+
+        function applySuggestedCategory() {
+            const select = document.getElementById("categorySelect");
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].text.toLowerCase() === suggestedCategoryValue.toLowerCase()) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+            document.getElementById("aiCategorySuggestion").classList.add("d-none");
+        }
+
+        // =====================================================================
+        // AI Feature 3: Suggest Priority
+        // =====================================================================
+        async function suggestPriority() {
+            hideAiAlert();
+            const title = document.getElementById("ticketTitle").value.trim();
+            const desc = document.getElementById("ticketDescription").value.trim();
+
+            if (!title && !desc) {
+                showAiAlert("Please enter a ticket title or description before asking for priority suggestions.");
+                return;
+            }
+
+            const btn = document.getElementById("btnSuggestPriority");
+            const spinner = document.getElementById("prioritySpinner");
+            btn.disabled = true;
+            spinner.classList.remove("d-none");
+
+            try {
+                const response = await fetch('/User/SuggestPriority', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, description: desc })
+                });
+
+                const data = await response.json();
+                if (data.success && data.priority) {
+                    suggestedPriorityValue = data.priority;
+                    document.getElementById("aiPriorityText").textContent = data.priority;
+                    document.getElementById("aiPrioritySuggestion").classList.remove("d-none");
+                } else {
+                    showAiAlert(data.message || "AI service is currently unavailable. You can continue creating the ticket manually.");
+                }
+            } catch (err) {
+                showAiAlert("AI service is currently unavailable. You can continue creating the ticket manually.");
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add("d-none");
+            }
+        }
+
+        function applySuggestedPriority() {
+            const select = document.getElementById("prioritySelect");
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value.toLowerCase() === suggestedPriorityValue.toLowerCase()) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+            document.getElementById("aiPrioritySuggestion").classList.add("d-none");
+        }
+    </script>
+}

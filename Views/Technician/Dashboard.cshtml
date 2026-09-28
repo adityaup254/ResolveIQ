@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Technician Dashboard";
+}
+
+<div class="mt-4">
+    <h2>Technician Dashboard</h2>
+    <p class="text-muted">Welcome, <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</strong>!</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-warning text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.AssignedCount</h2>
+                    <small>Assigned</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.InProgressCount</h2>
+                    <small>In Progress</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.ResolvedCount</h2>
+                    <small>Resolved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger text-center h-100">
+                <div class="card-body">
+                    <h2 class="mb-0">@ViewBag.HighPriority</h2>
+                    <small>High Priority</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <a asp-action="AssignedTickets" class="btn btn-primary">View All Assigned Tickets</a>
+    </div>
+
+    <!-- Recent Assigned Tickets -->
+    <h5>Recently Assigned Tickets</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>User</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in ViewBag.RecentTickets)
+                {
+                    <tr>
+                        <td>@t.Id</td>
+                        <td>@t.Title</td>
+                        <td>@t.User?.FullName</td>
+                        <td>@t.Category?.Name</td>
+                        <td>
+                            <span class="badge bg-@(t.Priority == "High" ? "danger" : t.Priority == "Medium" ? "warning" : "info")">@t.Priority</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-@(t.Status == "Resolved" || t.Status == "Closed" ? "success" : "secondary")">@t.Status</span>
+                        </td>
+                        <td><a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-info">Update</a></td>
+                    </tr>
+                }
+                @if (((IEnumerable<ResolveIQ.Models.Ticket>)ViewBag.RecentTickets).Count() == 0)
+                {
+                    <tr><td colspan="7" class="text-center">No tickets assigned to you yet.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
